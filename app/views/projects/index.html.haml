@@ -1,0 +1,40 @@
+- if @user
+  %h1
+    Portfolio of
+    = @user.first_name
+
+  - unless @projects.blank?
+    %ul#projects
+      - @projects.each do |project|
+        %li.project-item
+          %h2= project.title
+          %ul.photo-container
+            - unless project.photos.blank?
+              - project.photos.each do |photo|
+                %li.photo-item
+                  = link_to photo.data_url, target: :blank do
+                    = image_tag photo.data_url(:thumb)
+                    %br
+                    #{photo.width}x#{photo.height}
+            - else
+              .no-content
+                There are no photos in this project.
+                - if current_user.id == @user.id #todo make via cancan
+                  = link_to 'Add photo', '#'
+
+
+    = paginate @projects, params: {user_id: @user.id}
+  - else
+    .no-content Sorry, there are no projects for this user
+
+
+  - unless @users.blank?
+    #users
+      %h2 Other users portfolio
+      %ul
+        - @users.each do |user|
+          %li= link_to user.first_name, user_projects_path(user)
+
+- else
+  %h1 Hello on Portfolio project
+  .no-content Please make 'rake db:seed'
